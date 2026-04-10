@@ -1,0 +1,24 @@
+# Virtual environment
+.venv/
+
+# Data files — too large for git
+accepted_2007_to_2018Q4.csv.gz
+accepted_2007_to_2018Q4.parquet
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Editor / OS artifacts
+.~lock.*
+.DS_Store
+__pycache__/
+*.pyc
+*.pyo
+
+# Pytest cache
+.pytest_cache/
+
+# Python egg / build artifacts
+*.egg-info/
+dist/
+build/
