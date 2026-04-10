@@ -41,10 +41,49 @@ def annuity_payment(principal: float, annual_rate: float, months: int) -> float:
 
 class TestScheduledPayment:
     def test_standard_loan(self):
-        """Monthly payment on $10k, 12% WAC, 12-month term."""
+        """
+        Monthly payment on $10k, 12% WAC, 12-month term — hand-computed.
+
+        annuity formula: payment = B × r / (1 - (1+r)^-n)
+          r       = 12% / 12 = 1% = 0.01
+          payment = 10,000 × 0.01 / (1 - 1.01^-12)
+                  = 100 / (1 - 0.88745)
+                  = 100 / 0.11255
+                  = $888.49
+
+        Verified independently — not derived from code.
+        """
         payment = _scheduled_payment(10_000, 0.12 / 12, 12)
-        expected = annuity_payment(10_000, 0.12, 12)
-        assert abs(payment - expected) < 0.01
+        assert abs(payment - 888.49) < 0.01
+
+    def test_month1_interest_and_principal(self):
+        """
+        Month 1 cash flows on $10k, 12% WAC, 12-month term — hand-computed.
+
+          interest  = 10,000 × 0.01             = $100.00
+          principal = 888.49 - 100.00           = $788.49
+          balance   = 10,000 - 788.49           = $9,211.51
+
+        Month 2:
+          interest  = 9,211.51 × 0.01           = $92.12
+          principal = 888.49 - 92.12            = $796.37
+        """
+        result = project(10_000, 0.12, 12, cdr=0.0, cpr=0.0, loss_severity=0.0)
+        assert abs(result["interest"][0]   - 100.00) < 0.01
+        assert abs(result["principal"][0]  - 788.49) < 0.01
+        assert abs(result["interest"][1]   -  92.12) < 0.01
+        assert abs(result["principal"][1]  - 796.37) < 0.01
+
+    def test_total_payments_hand_computed(self):
+        """
+        Total payments over life of $10k, 12% WAC, 12-month term — hand-computed.
+
+          total payments = $888.49 × 12 = $10,661.88
+          total interest = $10,661.88 - $10,000.00 = $661.88
+        """
+        result = project(10_000, 0.12, 12, cdr=0.0, cpr=0.0, loss_severity=0.0)
+        total = (result["interest"] + result["principal"]).sum()
+        assert abs(total - 10_661.88) < 0.10
 
     def test_zero_balance(self):
         assert _scheduled_payment(0, 0.01, 12) == 0.0

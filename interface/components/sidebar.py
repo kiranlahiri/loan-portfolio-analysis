@@ -119,48 +119,48 @@ def render() -> SidebarInputs:
 
         with st.expander("Base scenario", expanded=False):
             base_cdr = st.slider(
-                "CDR", 0.0, 0.5, float(BASE_CDR), 0.001,
+                "CDR", 0.0, 50.0, round(float(BASE_CDR) * 100, 1), 0.1,
                 format="%.1f%%", key="base_cdr",
                 help="Annual cumulative default rate.",
-            )
+            ) / 100.0
             base_cpr = st.slider(
-                "CPR", 0.0, 1.0, float(BASE_CPR), 0.001,
+                "CPR", 0.0, 100.0, round(float(BASE_CPR) * 100, 1), 0.1,
                 format="%.1f%%", key="base_cpr",
                 help="Annual cumulative prepayment rate.",
-            )
+            ) / 100.0
             base_loss_severity = st.slider(
-                "Loss Severity", 0.0, 1.0, float(BASE_LOSS_SEVERITY), 0.001,
+                "Loss Severity", 0.0, 100.0, round(float(BASE_LOSS_SEVERITY) * 100, 1), 0.1,
                 format="%.1f%%", key="base_sev",
                 help="Fraction of defaulted balance permanently lost.",
-            )
+            ) / 100.0
 
         with st.expander("Stress scenario", expanded=False):
             stress_cdr = st.slider(
-                "CDR", 0.0, 0.8, round(float(BASE_CDR) * 2.0, 4), 0.001,
+                "CDR", 0.0, 80.0, round(float(BASE_CDR) * 2.0 * 100, 1), 0.1,
                 format="%.1f%%", key="stress_cdr",
-            )
+            ) / 100.0
             stress_cpr = st.slider(
-                "CPR", 0.0, 1.0, round(float(BASE_CPR) * 0.5, 4), 0.001,
+                "CPR", 0.0, 100.0, round(float(BASE_CPR) * 0.5 * 100, 1), 0.1,
                 format="%.1f%%", key="stress_cpr",
-            )
+            ) / 100.0
             stress_loss_severity = st.slider(
-                "Loss Severity", 0.0, 1.0, float(BASE_LOSS_SEVERITY), 0.001,
+                "Loss Severity", 0.0, 100.0, round(float(BASE_LOSS_SEVERITY) * 100, 1), 0.1,
                 format="%.1f%%", key="stress_sev",
-            )
+            ) / 100.0
 
         with st.expander("Upside scenario", expanded=False):
             upside_cdr = st.slider(
-                "CDR", 0.0, 0.5, round(float(BASE_CDR) * 0.5, 4), 0.001,
+                "CDR", 0.0, 50.0, round(float(BASE_CDR) * 0.5 * 100, 1), 0.1,
                 format="%.1f%%", key="upside_cdr",
-            )
+            ) / 100.0
             upside_cpr = st.slider(
-                "CPR", 0.0, 1.0, min(round(float(BASE_CPR) * 1.5, 4), 1.0), 0.001,
+                "CPR", 0.0, 100.0, min(round(float(BASE_CPR) * 1.5 * 100, 1), 100.0), 0.1,
                 format="%.1f%%", key="upside_cpr",
-            )
+            ) / 100.0
             upside_loss_severity = st.slider(
-                "Loss Severity", 0.0, 1.0, float(BASE_LOSS_SEVERITY), 0.001,
+                "Loss Severity", 0.0, 100.0, round(float(BASE_LOSS_SEVERITY) * 100, 1), 0.1,
                 format="%.1f%%", key="upside_sev",
-            )
+            ) / 100.0
 
         st.divider()
 
