@@ -1,0 +1,15 @@
+duckdb>=1.5
+fastapi>=0.135
+jupyterlab>=4.0
+numpy>=2.0
+numpy-financial>=1.0
+openpyxl>=3.1
+pandas>=2.0
+plotly>=6.0
+pyarrow>=15.0
+pydantic>=2.0
+pytest>=9.0
+requests>=2.30
+slowapi>=0.1
+streamlit>=1.56
+uvicorn>=0.44
