@@ -178,13 +178,20 @@ class TestLoadCleanLoans:
         ])
         assert len(load_clean_loans(path)) == 1
 
-    def test_dti_out_of_range_dropped(self, tmp_path):
+    def test_negative_dti_dropped(self, tmp_path):
         path = _write_parquet(tmp_path, [
             _base_raw_row(),
             _base_raw_row(dti=-1.0),
-            _base_raw_row(dti=110.0),
         ])
         assert len(load_clean_loans(path)) == 1
+
+    def test_dti_over_100_retained(self, tmp_path):
+        """DTI > 100 represents real over-leveraged borrowers — retained, not excluded."""
+        path = _write_parquet(tmp_path, [
+            _base_raw_row(),
+            _base_raw_row(dti=110.0),
+        ])
+        assert len(load_clean_loans(path)) == 2
 
     def test_policy_exception_loan_dropped(self, tmp_path):
         path = _write_parquet(tmp_path, [
