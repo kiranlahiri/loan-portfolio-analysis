@@ -200,11 +200,9 @@ The cash flow engine operates on pool-level aggregates — six scalar inputs reg
 
 ## 8. What's Next
 
-**Through-the-cycle CDR**: The base CDR (17.55%) is a point-in-time benign-cycle estimate from 2012–2016, a period of above-average credit performance. A through-the-cycle estimate would blend this with stressed assumptions weighted by historical recession frequency — producing a more conservative long-run default expectation appropriate for hold-to-maturity analysis.
+**Option B — Data pipeline hardening for alternative datasets**: The current implementation is built specifically around the Lending Club schema. The natural next extension would be to make the ingestion layer schema-agnostic: define a standard column mapping interface, write a load function for a new dataset (e.g. Prosper, SoFi, or a proprietary lender tape), and pass it through `validate_pool_schema()` before handing it to the engine. The cash flow engine and Streamlit app would require no changes — they consume a `PoolSnapshot` regardless of where it came from. This would make the tool usable as a general consumer ABS analysis platform rather than a Lending Club-specific one.
 
 **Loan-level grade stratification in scenarios**: The current engine applies a single CDR/CPR to the whole pool. Grade-level CDR curves (A: 5%, G: 44%) are already computed in Part 1. Passing grade composition as an input and applying grade-specific CDRs would materially improve projection accuracy for mixed-grade pools.
 
-**Delta method extrapolation in the pool adapter**: `cashflow/pool.py` falls back to the base CDR assumption for incomplete vintages (2017–2018). A more rigorous approach would apply the Moody's Appendix 1 Delta method directly in the adapter, using the empirical timing curve to extrapolate lifetime CDR from the observed-to-date rate. The timing curve infrastructure already exists in the engine.
-
-**Through-the-cycle CDR in Monte Carlo**: The Monte Carlo uncertainty parameters are calibrated to 2012–2016 benign-cycle vintage spread. A more complete simulation would widen the CDR distribution to reflect recession scenarios (e.g., using a mixture model combining the benign-cycle distribution with a stressed distribution weighted by historical recession frequency), producing tail risk estimates that extend beyond the observed vintage variation.
+**Loan-level CDR by grade in the engine**: The current engine applies a single CDR to the whole pool. Grade-level CDR curves (A: 5%, G: 44%) are already computed in Part 1. Passing grade composition as an input and applying grade-specific CDRs would materially improve projection accuracy for mixed-grade pools.
 

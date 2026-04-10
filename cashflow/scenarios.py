@@ -48,6 +48,20 @@ import pandas as pd
 from cashflow.irr import compute_irr, solve_price
 
 
+def _timing_curve_for_wam(wam: int) -> np.ndarray:
+    """
+    Return the default timing curve truncated and renormalized to length wam.
+    If wam > 60, pads with zeros and renormalizes.
+    """
+    curve = DEFAULT_TIMING_CURVE[:wam].copy() if wam <= 60 else np.pad(
+        DEFAULT_TIMING_CURVE, (0, wam - 60)
+    )
+    total = curve.sum()
+    if total > 0:
+        curve = curve / total
+    return curve
+
+
 # ---------------------------------------------------------------------------
 # Base assumptions from Part 1 analysis
 # ---------------------------------------------------------------------------
@@ -67,6 +81,20 @@ BASE_LOSS_SEVERITY = 0.9176   # 91.76% loss severity, completed vintages 2012-20
 # Loan-count weighted std = 0.0098 (data-derived, replaces eyeballed 0.009)
 CDR_STD = 0.0098
 CPR_STD = 0.047
+
+# Default timing curve — empirically derived from 2012-2016 completed vintages.
+# Each element is the fraction of total lifetime defaults occurring in that month.
+# Peaks at months 10-12; 75.3% of defaults occur by month 24 (consistent with Moody's §6.3).
+# Length 60 covers the maximum loan term. For pools with WAM < 60, the engine
+# uses only the first WAM elements, renormalized to sum to 1.0.
+DEFAULT_TIMING_CURVE = np.array([
+    0.0076, 0.0137, 0.0192, 0.0236, 0.0287, 0.0318, 0.0349, 0.0368, 0.0379, 0.0395,
+    0.0405, 0.0400, 0.0395, 0.0388, 0.0367, 0.0360, 0.0357, 0.0341, 0.0327, 0.0311,
+    0.0306, 0.0297, 0.0280, 0.0265, 0.0258, 0.0228, 0.0223, 0.0209, 0.0188, 0.0172,
+    0.0156, 0.0141, 0.0132, 0.0116, 0.0100, 0.0075, 0.0063, 0.0054, 0.0047, 0.0041,
+    0.0036, 0.0031, 0.0027, 0.0024, 0.0021, 0.0018, 0.0016, 0.0014, 0.0012, 0.0011,
+    0.0009, 0.0008, 0.0007, 0.0006, 0.0005, 0.0004, 0.0004, 0.0003, 0.0003, 0.0002,
+])
 
 # CDR/CPR correlation for Monte Carlo.
 # Empirical correlation across 2012-2016 vintages is +0.25, but this is a
@@ -242,6 +270,10 @@ def compare_scenarios(
     if scenarios is None:
         scenarios = build_scenarios()
 
+    # Use empirical timing curve unless caller provides one explicitly
+    if timing_curve is None:
+        timing_curve = _timing_curve_for_wam(wam)
+
     rows = []
     for params in scenarios:
         irr = compute_irr(
@@ -355,6 +387,10 @@ def monte_carlo(
         cpr_draws     : np.ndarray of CPR draws used
     """
     rng = np.random.default_rng(seed)
+
+    # Use empirical timing curve unless caller provides one explicitly
+    if timing_curve is None:
+        timing_curve = _timing_curve_for_wam(wam)
 
     # Bivariate normal draw with fixed negative correlation
     cov = CDR_CPR_CORRELATION * CDR_STD * CPR_STD
