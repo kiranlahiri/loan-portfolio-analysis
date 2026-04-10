@@ -111,7 +111,7 @@ STANDARD_SCHEMA = {
     "issue_date":             ("datetime", False, None),
     "loan_status":            (str,    False, None),
     "fico":                   (float,  True,  (300, 850)),
-    "dti":                    (float,  True,  (0, 100)),
+    "dti":                    (float,  True,  (0, None)),
     "out_prncp":              (float,  True,  (0, None)),
     "total_pymnt":            (float,  True,  (0, None)),
     "total_rec_prncp":        (float,  True,  (0, None)),
@@ -203,7 +203,6 @@ def load_clean_loans(path: str) -> pd.DataFrame:
             AND TRIM(term) IN ('36 months', '60 months')
             AND int_rate IS NOT NULL
             AND dti >= 0
-            AND dti <= 100
             AND loan_status NOT LIKE 'Does not meet%'
             AND total_pymnt <= loan_amnt * 2
 
