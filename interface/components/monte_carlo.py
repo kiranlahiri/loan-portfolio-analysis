@@ -107,7 +107,7 @@ def render(mc: dict) -> None:
         yaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.07)", color="#e6edf3"),
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     # -------------------------------------------------------------------------
     # CDR vs IRR scatter (diagnostic)
@@ -139,4 +139,4 @@ def render(mc: dict) -> None:
             yaxis=dict(tickformat=".0%", color="#e6edf3",
                        gridcolor="rgba(255,255,255,0.07)"),
         )
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, width="stretch")

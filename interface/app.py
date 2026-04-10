@@ -148,6 +148,17 @@ if len(filtered_df) == 0:
     st.error("No loans match the selected filter. Adjust the vintage or status filter.")
     st.stop()
 
+# Warn if selected range includes pre-2012 vintages (different credit regime)
+if inputs.vintage_year_start < 2012:
+    st.warning(
+        "**Regime warning:** Your selected vintage range includes pre-2012 loans. "
+        "PSI analysis identified a population break at the 2011→2012 transition — "
+        "pre-2012 borrowers represent a different credit regime (post-crisis tightening "
+        "had not yet taken effect). "
+        "Base CDR/CPR assumptions are calibrated to 2012–2016 completed vintages. "
+        "Applying them to earlier vintages may produce unreliable projections."
+    )
+
 # ---------------------------------------------------------------------------
 # Build PoolSnapshot
 # ---------------------------------------------------------------------------

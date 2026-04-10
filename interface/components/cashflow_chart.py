@@ -93,7 +93,7 @@ def render(cf: dict, scenario_label: str = "Base") -> None:
                    zerolinecolor="rgba(255,255,255,0.25)", color="#e6edf3"),
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     # Summary stats below chart
     col1, col2, col3, col4 = st.columns(4)

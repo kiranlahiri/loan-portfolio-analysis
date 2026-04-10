@@ -83,8 +83,8 @@ def render(scenario_df: pd.DataFrame, purchase_price: float) -> None:
     styler = (
         display.style
         .apply(style_rows, axis=1)
-        .applymap(style_scenario_col, subset=["Scenario"])
-        .applymap(style_irr, subset=["IRR"])
+        .map(style_scenario_col, subset=["Scenario"])
+        .map(style_irr, subset=["IRR"])
         .set_properties(**{
             "font-family": "'IBM Plex Mono', monospace",
             "font-size": "0.83rem",
@@ -94,7 +94,7 @@ def render(scenario_df: pd.DataFrame, purchase_price: float) -> None:
         .hide(axis="index")
     )
 
-    st.dataframe(styler, use_container_width=True, hide_index=True)
+    st.dataframe(styler, width="stretch", hide_index=True)
 
     st.write("")
 
