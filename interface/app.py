@@ -76,6 +76,7 @@ from cashflow.engine import project
 from cashflow.scenarios import build_scenarios, compare_scenarios, monte_carlo
 from interface.db import init_db
 from interface.components import sidebar as sidebar_component
+from interface.components.sidebar import DEFAULT_PATH
 from interface.components import pool_summary, scenarios as scenarios_component
 from interface.components import cashflow_chart, monte_carlo as mc_component
 from interface.components import history as history_component
@@ -96,16 +97,6 @@ def load_data(path: str) -> pd.DataFrame:
     return get_loans(path)
 
 
-@st.cache_data(show_spinner="Loading uploaded file...")
-def load_uploaded(file_bytes: bytes) -> pd.DataFrame:
-    import tempfile, os
-    with tempfile.NamedTemporaryFile(suffix=".parquet", delete=False) as f:
-        f.write(file_bytes)
-        tmp_path = f.name
-    df = get_loans(tmp_path)
-    os.unlink(tmp_path)
-    return df
-
 
 # ---------------------------------------------------------------------------
 # Sidebar
@@ -115,10 +106,7 @@ inputs = sidebar_component.render()
 # ---------------------------------------------------------------------------
 # Load data
 # ---------------------------------------------------------------------------
-if inputs.uploaded_file is not None:
-    loans_df = load_uploaded(inputs.uploaded_file.read())
-else:
-    loans_df = load_data(inputs.data_path)
+loans_df = load_data(DEFAULT_PATH)
 
 # ---------------------------------------------------------------------------
 # Filter to selected vintage

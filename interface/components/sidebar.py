@@ -23,10 +23,6 @@ DEFAULT_PATH = "accepted_2007_to_2018Q4.parquet"
 
 @dataclass
 class SidebarInputs:
-    # Data source
-    data_path:      str
-    uploaded_file:  object          # st.UploadedFile or None
-
     # Pool filter
     vintage_year_start: int          # first year of vintage range (inclusive)
     vintage_year_end:   int          # last year of vintage range (inclusive)
@@ -63,31 +59,8 @@ def render() -> SidebarInputs:
     st.sidebar.divider()
 
     # -------------------------------------------------------------------------
-    # Data source — outside the form (file_uploader cannot live inside st.form)
-    # -------------------------------------------------------------------------
-    st.sidebar.subheader("Data Source")
-
-    data_mode = st.sidebar.radio(
-        "Source",
-        ["Default dataset", "Upload parquet"],
-        horizontal=True,
-        label_visibility="collapsed",
-    )
-
     uploaded_file = None
     data_path = DEFAULT_PATH
-
-    if data_mode == "Upload parquet":
-        uploaded_file = st.sidebar.file_uploader(
-            "Upload parquet file",
-            type=["parquet"],
-            help=(
-                "Upload any parquet file conforming to the standard schema. "
-                "See CLAUDE.md for the 22 required columns."
-            ),
-        )
-        if uploaded_file is None:
-            st.sidebar.info("Awaiting file upload — using default dataset.")
 
     st.sidebar.divider()
 
@@ -221,8 +194,6 @@ def render() -> SidebarInputs:
         )
 
     return SidebarInputs(
-        data_path=data_path,
-        uploaded_file=uploaded_file,
         vintage_year_start=vintage_year_start,
         vintage_year_end=vintage_year_end,
         status_filter=status_filter,
